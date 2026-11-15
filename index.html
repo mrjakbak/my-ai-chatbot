@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> المساعد الآلي الذكي  |  Smart Automated Assistant </title>
+  <title>المساعد الآلي الذكي | Smart Automated Assistant</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -197,8 +197,8 @@
     <section class="welcome" id="welcome">
       <div class="logo">🤖</div>
 
-      <h1> المساعد الآلي الذكي </h1>
-      <h2 class="english-title"> Smart Automated Assistant </h2>
+      <h1>المساعد الآلي الذكي</h1>
+      <h2 class="english-title">Smart Automated Assistant</h2>
 
       <p class="subtitle">
         نسعد بخدمتكم<br>
@@ -324,25 +324,36 @@
       const loadingMessage = addMessage(t.loading, 'bot');
 
       try {
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            message: text,
-            language: currentLanguage
-          })
-        });
+        const response = await fetch(
+          'https://smart-store-assistant.mr-jak-bak.workers.dev/',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              message: text,
+              language: currentLanguage
+            })
+          }
+        );
 
-        if (!response.ok) throw new Error('Server error');
+        if (!response.ok) {
+          throw new Error('Server error: ' + response.status);
+        }
 
         const data = await response.json();
-        loadingMessage.textContent = data.reply || data.response || t.error;
+
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        loadingMessage.textContent =
+          data.reply || data.response || t.error;
 
       } catch (error) {
         loadingMessage.textContent = t.error;
-        console.error(error);
+        console.error('Chat error:', error);
       } finally {
         button.disabled = false;
         input.focus();
